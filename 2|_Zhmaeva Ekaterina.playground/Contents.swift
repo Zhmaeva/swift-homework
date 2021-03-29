@@ -89,3 +89,37 @@ c. Зачеркнуть в списке числа от 2 + p до n, счита
 d. Найти первое не зачёркнутое число в списке, большее, чем p, и присвоить значению переменной p это число.
 e. Повторять шаги c и d, пока возможно*/
  
+func getPrimeNumbers(n: Int) -> Array<Int> {
+    var numbers = Array(0...n)
+    numbers[1] = 0
+    
+    var step = 2;
+    
+    var index = 2
+    
+    while step*step <= n {
+        if numbers[step] == 0 {
+            step+=1;
+            index = step
+            continue
+        }
+
+        while index * step <= n {
+            numbers[index * step] = 0
+
+            index+=1
+        }
+        step+=1;
+        index = step
+    }
+    
+    let prime = numbers.filter{ $0 != 0}
+    
+    return prime
+}
+
+// 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97
+
+let primeNumbers = getPrimeNumbers(n: 100);
+
+print(primeNumbers)
