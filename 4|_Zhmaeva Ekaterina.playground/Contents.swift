@@ -11,6 +11,10 @@ import Foundation
  */
     
 
+protocol Perform {
+    func perform(action: Car.Action)
+}
+
 class Car {
     enum BodyType: CustomStringConvertible {
         case estate, coupe
@@ -77,11 +81,9 @@ class Car {
         self.km = km
         self.currentLoad = 0
     }
-
-    func perform(action: Action){}
 }
 
-class TruckCar: Car, CustomStringConvertible {
+class TruckCar: Car, Perform, CustomStringConvertible {
     var description: String {
         get {
             return "Название: \(self.name); \nЦвет:  \(self.color); \nТрансмиссия:  \(self.transmition); \nТип кузова: \(self.bodyworkType); \nСтатус окон: \(self.windows); \nСтатус дверей: \(self.door); \nМаксимальная загрузка: \(self.maxLoad); \nТекущая загрузка: \(self.currentLoad) "
@@ -111,7 +113,7 @@ class TruckCar: Car, CustomStringConvertible {
         self.trailer = trailer
     }
     
-    override func perform(action: Car.Action) {
+    func perform(action: Car.Action) {
         switch action {
         case .load(let weight):
             guard case .box(_) = self.trailer else {
@@ -135,7 +137,7 @@ class TruckCar: Car, CustomStringConvertible {
     }
 }
 
-class SportCar: Car, CustomStringConvertible {
+class SportCar: Car, Perform, CustomStringConvertible {
     var description: String {
         get {
             return "Название: \(self.name); \nЦвет:  \(self.color); \nТрансмиссия:  \(self.transmition); \nТип кузова: \(self.bodyworkType); \nСтатус окон: \(self.windows); \nСтатус дверей: \(self.door); \nСтатус крыши: \(self.roof); \nМаксимальная загрузка: \(self.maxLoad); \nТекущая загрузка: \(self.currentLoad)"
@@ -150,7 +152,8 @@ class SportCar: Car, CustomStringConvertible {
         super.init(bodyworkType: bodyworkType, color: color, transmition: transmition, windows: windows, door: door, name: name, km: km)
         self.maxLoad = maxLoad
     }
-    override func perform(action: Car.Action) {
+
+    func perform(action: Car.Action) {
         switch action {
         case .switchRoof(let roofState):
             self.roof = roofState
