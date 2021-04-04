@@ -12,8 +12,19 @@ import Foundation
     
 
 class Car {
-    enum BodyType {
+    enum BodyType: CustomStringConvertible {
         case estate, coupe
+        
+        var description: String {
+            get {
+                switch self {
+                case .coupe:
+                    return "Купе"
+                case .estate:
+                    return "Универсал"
+                }
+            }
+        }
     }
 
     enum Transmission {
@@ -32,12 +43,17 @@ class Car {
         case box(Double)
         case none
     }
+    
+    enum FoldingRoof {
+        case open, close
+    }
 
     enum Action {
         case load(weight: Double)
         case switchWindows(WindowState)
         case switchDoors(DoorState)
         case attachTrailer(Trailer)
+        case switchRoof(FoldingRoof)
     }
 
     let bodyworkType: BodyType
@@ -50,7 +66,7 @@ class Car {
     var name: String
     var km: Double
     
-    init?(bodyworkType: BodyType, color: UIColor, transmition: Transmission, windows: WindowState, door: DoorState, name: String, km: Double) {
+    init(bodyworkType: BodyType, color: UIColor, transmition: Transmission, windows: WindowState, door: DoorState, name: String, km: Double) {
         self.bodyworkType = bodyworkType
         self.color = color
         self.transmition  = transmition
@@ -65,20 +81,34 @@ class Car {
     func perform(action: Action){}
 }
 
-class TruckCar: Car {
-    var trailer: Trailer
+class TruckCar: Car, CustomStringConvertible {
+    var description: String {
+        get {
+            return "Название: \(self.name); \nЦвет:  \(self.color); \nТрансмиссия:  \(self.transmition); \nТип кузова: \(self.bodyworkType); \nСтатус окон: \(self.windows); \nСтатус дверей: \(self.door); \nМаксимальная загрузка: \(self.maxLoad); \nТекущая загрузка: \(self.currentLoad) "
+        }
+    }
+    private var _trailer: Trailer = .none
+    var trailer: Trailer {
+        get {
+            return self._trailer
+        }
+        set {
+            switch newValue {
+            case .box(let maxLoad):
+                self.maxLoad = maxLoad
+            default:
+                self.maxLoad = 0
+            }
+            
+            self.currentLoad = 0;
+            self._trailer = newValue
+        }
+    }
     
-    init?(bodyworkType: Car.BodyType, color: UIColor, transmition: Car.Transmission, windows: Car.WindowState, door: Car.DoorState, name: String, km: Double, trailer: Trailer) {
-        self.trailer = trailer
+    init(bodyworkType: Car.BodyType, color: UIColor, transmition: Car.Transmission, windows: Car.WindowState, door: Car.DoorState, name: String, km: Double, trailer: Trailer) {
         
         super.init(bodyworkType: bodyworkType, color: color, transmition: transmition, windows: windows, door: door, name: name, km: km)
-        
-        switch trailer {
-        case .box(let maxLoad):
-            self.maxLoad = maxLoad
-        default:
-            self.maxLoad = 0
-        }
+        self.trailer = trailer
     }
     
     override func perform(action: Car.Action) {
@@ -99,13 +129,41 @@ class TruckCar: Car {
             self.door = doorState
         case .attachTrailer(let trailerState):
             self.trailer = trailerState
-            self.currentLoad = 0
-            
-            switch trailerState {
-            case .box(let maxLoad):
-                self.maxLoad = maxLoad
-            default:
-                self.maxLoad = 0
+        default:
+            print("Неопознанное действие")
+        }
+    }
+}
+
+class SportCar: Car, CustomStringConvertible {
+    var description: String {
+        get {
+            return "Название: \(self.name); \nЦвет:  \(self.color); \nТрансмиссия:  \(self.transmition); \nТип кузова: \(self.bodyworkType); \nСтатус окон: \(self.windows); \nСтатус дверей: \(self.door); \nСтатус крыши: \(self.roof); \nМаксимальная загрузка: \(self.maxLoad); \nТекущая загрузка: \(self.currentLoad)"
+        }
+    }
+    
+    var roof: FoldingRoof
+   
+    init(bodyworkType: Car.BodyType, color: UIColor, transmition: Car.Transmission, windows: Car.WindowState, door: Car.DoorState, name: String, km: Double, roof: FoldingRoof, maxLoad: Double) {
+        self.roof = roof
+        
+        super.init(bodyworkType: bodyworkType, color: color, transmition: transmition, windows: windows, door: door, name: name, km: km)
+        self.maxLoad = maxLoad
+    }
+    override func perform(action: Car.Action) {
+        switch action {
+        case .switchRoof(let roofState):
+            self.roof = roofState
+        case .switchWindows(let windowsState):
+            self.windows = windowsState
+        case .switchDoors(let doorState):
+            self.door = doorState
+        case.load(let weight):
+            let freeLoad = self.maxLoad - self.currentLoad
+            if weight <= freeLoad {
+                self.currentLoad += weight
+            } else {
+                self.currentLoad = self.maxLoad
             }
         default:
             print("Неопознанное действие")
@@ -113,7 +171,33 @@ class TruckCar: Car {
     }
 }
 
-class SportCar: Car {
-    
-}
+var truckCar1 = TruckCar(bodyworkType: .estate, color: .darkGray, transmition: .manual, windows: .close, door: .close, name: "Грузовик", km: 500, trailer: .box(100))
 
+print(truckCar1)
+print("\n \n---------------------------------")
+
+truckCar1.perform(action: .load(weight: 50))
+truckCar1.perform(action: .switchWindows(.open))
+truckCar1.perform(action: .switchDoors(.open))
+truckCar1.perform(action: .switchRoof(.open))
+
+print(truckCar1)
+print("\n \n---------------------------------")
+
+truckCar1.perform(action: .attachTrailer(.none))
+print(truckCar1)
+print("\n \n---------------------------------")
+
+var sportCar1 = SportCar(bodyworkType: .coupe, color: .red, transmition: .auto, windows: .open, door: .open, name: "Спортивная машина", km: 800, roof: .open, maxLoad: 30)
+
+print(sportCar1)
+print("\n \n---------------------------------")
+
+sportCar1.perform(action: .attachTrailer(.box(57)))
+sportCar1.perform(action: .load(weight: 50))
+sportCar1.perform(action: .switchDoors(.close))
+sportCar1.perform(action: .switchRoof(.close))
+sportCar1.perform(action: .switchWindows(.close))
+
+print(sportCar1)
+print("\n \n---------------------------------")
