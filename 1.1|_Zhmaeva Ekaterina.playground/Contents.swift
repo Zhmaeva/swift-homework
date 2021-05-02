@@ -35,30 +35,36 @@ func solveTreangle(length: Double, width: Double) {
     var perimeter = (length + width + hipotenuse)
     perimeter = round((perimeter * 100) / 100)
     
-    print("Катет трегольника а = \(length)")
-    print("Катет треугольника b = \(width)")
-    print("Гипотенуза треугольника = \(hipotenuse)")
-    print("Площадь треугольника = \(area)")
-    print("Периметр треугольника = \(perimeter)")
+    print("""
+    Катет трегольника а = \(length)
+    Катет треугольника b = \(width)
+    Гипотенуза треугольника = \(hipotenuse)
+    Площадь треугольника = \(area)
+    Периметр треугольника = \(perimeter)
+""")
 }
 
 solveTreangle(length: 7, width: 9)
+
 print("----------------------------------------\n")
 
 /*
-  Задание 3|
-  Пользователь вводит сумму вклада в банк и годовой процент.
-  Найти сумму вклада через 5 лет.
-*/
- 
-func сalculationOfIncome (depositAmount: Double, percent: Double, time: Int) {
+ Задание 3|
+ Пользователь вводит сумму вклада в банк и годовой процент.
+ Найти сумму вклада через 5 лет.
+ */
+
+func сalculationOfIncome(depositAmount: Double, percent: Double, time: Int) {
     var amount = depositAmount
     for _ in 1...time {
         amount += (amount/100) * percent
     }
-    print("Сумма вклада \(String.init(format: "%0.0f", depositAmount)) рублей")
-    print("Процентная ставка \(String.init(format: "%0.0f", percent)) %")
-    print("Через \(time) лет сумма вклада составляет: \(String.init(format: "%0.2f",amount)) рублей")
+    
+    print("""
+    Сумма вклада \(String.init(format: "%0.0f", depositAmount)) рублей
+    Процентная ставка \(String.init(format: "%0.0f", percent)) %
+    Через \(time) лет сумма вклада составляет: \(String.init(format: "%0.2f",amount)) рублей
+""")
 }
 
 сalculationOfIncome(depositAmount: 50000, percent: 3, time: 5)
